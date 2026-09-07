@@ -3,53 +3,49 @@
 namespace App\Http\Controllers;
 
 use App\Models\Aluno;
-use Illuminate\Http\Request;
+use App\Http\Requests\AlunoRequest;
 
 class AlunoController extends Controller
 {
-    // READ: Listar todos os alunos
     public function index()
     {
-        return response()->json(Aluno::all());
+        $alunos = Aluno::orderBy('id', 'desc')->get();
+        return view('alunos.index', compact('alunos'));
     }
 
-    // CREATE: Salvar um novo aluno
-    public function store(Request $request)
+    public function create()
     {
-        $validated = $request->validate([
-            'nome' => 'required|string|max:255',
-            'email' => 'required|email|unique:alunos,email',
-        ]);
-
-        $aluno = Aluno::create($validated);
-
-        return response()->json($aluno, 201);
+        return view('alunos.create');
     }
 
-    // READ: Exibir um aluno específico
+    public function store(AlunoRequest $request)
+    {
+        Aluno::create($request->validated());
+
+        return redirect()->route('alunos.index')->with('success', 'Aluno cadastrado com sucesso!');
+    }
+
     public function show(Aluno $aluno)
     {
-        return response()->json($aluno);
+        return view('alunos.show', compact('aluno'));
     }
 
-    // UPDATE: Atualizar dados de um aluno
-    public function update(Request $request, Aluno $aluno)
+    public function edit(Aluno $aluno)
     {
-        $validated = $request->validate([
-            'nome' => 'sometimes|required|string|max:255',
-            'email' => 'sometimes|required|email|unique:alunos,email,' . $aluno->id,
-        ]);
-
-        $aluno->update($validated);
-
-        return response()->json($aluno);
+        return view('alunos.edit', compact('aluno'));
     }
 
-    // DELETE: Remover um aluno
+    public function update(AlunoRequest $request, Aluno $aluno)
+    {
+        $aluno->update($request->validated());
+
+        return redirect()->route('alunos.index')->with('success', 'Aluno atualizado com sucesso!');
+    }
+
     public function destroy(Aluno $aluno)
     {
         $aluno->delete();
 
-        return response()->json(['message' => 'Aluno removido com sucesso']);
+        return redirect()->route('alunos.index')->with('success', 'Aluno removido com sucesso!');
     }
 }
