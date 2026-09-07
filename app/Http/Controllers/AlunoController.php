@@ -2,42 +2,54 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Aluno;
 use Illuminate\Http\Request;
 
 class AlunoController extends Controller
 {
+    // READ: Listar todos os alunos
     public function index()
     {
-        return "Listagem de alunos (index)";
+        return response()->json(Aluno::all());
     }
 
-    public function create()
-    {
-        return "Formulário de criação de aluno (create)";
-    }
-
+    // CREATE: Salvar um novo aluno
     public function store(Request $request)
     {
-        return "Salvar novo aluno (store)";
+        $validated = $request->validate([
+            'nome' => 'required|string|max:255',
+            'email' => 'required|email|unique:alunos,email',
+        ]);
+
+        $aluno = Aluno::create($validated);
+
+        return response()->json($aluno, 201);
     }
 
-    public function show($id)
+    // READ: Exibir um aluno específico
+    public function show(Aluno $aluno)
     {
-        return "Exibir detalhes do aluno {$id} (show)";
+        return response()->json($aluno);
     }
 
-    public function edit($id)
+    // UPDATE: Atualizar dados de um aluno
+    public function update(Request $request, Aluno $aluno)
     {
-        return "Formulário de edição do aluno {$id} (edit)";
+        $validated = $request->validate([
+            'nome' => 'sometimes|required|string|max:255',
+            'email' => 'sometimes|required|email|unique:alunos,email,' . $aluno->id,
+        ]);
+
+        $aluno->update($validated);
+
+        return response()->json($aluno);
     }
 
-    public function update(Request $request, $id)
+    // DELETE: Remover um aluno
+    public function destroy(Aluno $aluno)
     {
-        return "Atualizar dados do aluno {$id} (update)";
-    }
+        $aluno->delete();
 
-    public function destroy($id)
-    {
-        return "Remover aluno {$id} (destroy)";
+        return response()->json(['message' => 'Aluno removido com sucesso']);
     }
 }
