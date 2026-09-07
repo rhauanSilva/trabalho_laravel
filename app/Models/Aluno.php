@@ -10,4 +10,4 @@ class Aluno extends Model
     use HasFactory;
 
     protected $fillable = ['nome', 'email'];
-}
+} 
