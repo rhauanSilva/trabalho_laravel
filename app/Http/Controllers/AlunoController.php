@@ -2,52 +2,54 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Aluno;
 use Illuminate\Http\Request;
 
 class AlunoController extends Controller
 {
-    private array $alunos = [
-        ['id' => 1, 'nome' => 'João Silva'],
-        ['id' => 2, 'nome' => 'Maria Souza'],
-        ['id' => 3, 'nome' => 'Pedro Santos'],
-    ];
-
+    // READ: Listar todos os alunos
     public function index()
     {
-      return view('alunos.index', ['alunos' => $this->alunos]);
+        return response()->json(Aluno::all());
     }
 
-    public function create()
-    {
-        return view('alunos.create');
-    }
-
+    // CREATE: Salvar um novo aluno
     public function store(Request $request)
     {
-        return redirect()->route('alunos.index');
+        $validated = $request->validate([
+            'nome' => 'required|string|max:255',
+            'email' => 'required|email|unique:alunos,email',
+        ]);
+
+        $aluno = Aluno::create($validated);
+
+        return response()->json($aluno, 201);
     }
 
-    public function show($id)
+    // READ: Exibir um aluno específico
+    public function show(Aluno $aluno)
     {
-        $aluno = collect($this->alunos)->firstWhere('id', (int) $id);
-
-        return view('alunos.show', ['aluno' => $aluno]);
+        return response()->json($aluno);
     }
 
-    public function edit($id)
+    // UPDATE: Atualizar dados de um aluno
+    public function update(Request $request, Aluno $aluno)
     {
-        $aluno = collect($this->alunos)->firstWhere('id', (int) $id);
+        $validated = $request->validate([
+            'nome' => 'sometimes|required|string|max:255',
+            'email' => 'sometimes|required|email|unique:alunos,email,' . $aluno->id,
+        ]);
 
-        return view('alunos.edit', ['aluno' => $aluno]);
+        $aluno->update($validated);
+
+        return response()->json($aluno);
     }
 
-    public function update(Request $request, $id)
+    // DELETE: Remover um aluno
+    public function destroy(Aluno $aluno)
     {
-        return "Atualizar dados do aluno {$id} (update)";
-    }
+        $aluno->delete();
 
-    public function destroy($id)
-    {
-        return "Remover aluno {$id} (destroy)";
+        return response()->json(['message' => 'Aluno removido com sucesso']);
     }
 }
