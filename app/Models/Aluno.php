@@ -9,9 +9,15 @@ class Aluno extends Model
 {
     use HasFactory;
 
-    // Libera os campos para serem salvos em massa pelo formulário
     protected $fillable = [
         'nome',
         'email',
+        'user_id', // Adicionado aqui!
     ];
+
+    // Um aluno pertence a um usuário
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 }
