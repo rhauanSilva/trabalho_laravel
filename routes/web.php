@@ -3,9 +3,8 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AlunoController;
 
-
 Route::get('/', function () {
-    return view('welcome');
+    return view('home');
 });
 
 // ATV 1: Rotas simples
@@ -36,3 +35,10 @@ Route::get('/usuario/{id}', function ($id) {
 
 // ATV 3: Rotas com parâmetros opcionais
 Route::resource('alunos', AlunoController::class);
+
+
+Route::get('/alunos', [AlunoController::class, 'index'])->name('alunos.index');
+Route::get('/alunos/create', [AlunoController::class, 'create'])->name('alunos.create');
+Route::post('/alunos', [AlunoController::class, 'store'])->name('alunos.store');
+Route::get('/alunos/{id}', [AlunoController::class, 'show'])->name('alunos.show');
+Route::get('/alunos/{id}/edit', [AlunoController::class, 'edit'])->name('alunos.edit');
