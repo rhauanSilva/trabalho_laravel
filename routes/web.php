@@ -6,7 +6,7 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-
+// ATV 1: Rotas simples
 Route::get('/sobre', function () {
     return 'Página Sobre';
 });
