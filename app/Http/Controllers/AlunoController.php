@@ -6,29 +6,39 @@ use Illuminate\Http\Request;
 
 class AlunoController extends Controller
 {
+    private array $alunos = [
+        ['id' => 1, 'nome' => 'João Silva'],
+        ['id' => 2, 'nome' => 'Maria Souza'],
+        ['id' => 3, 'nome' => 'Pedro Santos'],
+    ];
+
     public function index()
     {
-        return "Listagem de alunos (index)";
+      return view('alunos.index', ['alunos' => $this->alunos]);
     }
 
     public function create()
     {
-        return "Formulário de criação de aluno (create)";
+        return view('alunos.create');
     }
 
     public function store(Request $request)
     {
-        return "Salvar novo aluno (store)";
+        return redirect()->route('alunos.index');
     }
 
     public function show($id)
     {
-        return "Exibir detalhes do aluno {$id} (show)";
+        $aluno = collect($this->alunos)->firstWhere('id', (int) $id);
+
+        return view('alunos.show', ['aluno' => $aluno]);
     }
 
     public function edit($id)
     {
-        return "Formulário de edição do aluno {$id} (edit)";
+        $aluno = collect($this->alunos)->firstWhere('id', (int) $id);
+
+        return view('alunos.edit', ['aluno' => $aluno]);
     }
 
     public function update(Request $request, $id)
