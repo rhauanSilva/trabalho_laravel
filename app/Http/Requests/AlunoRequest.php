@@ -2,29 +2,32 @@
 
 namespace App\Http\Requests;
 
-use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule; // Importamos a classe Rule do Laravel
 
 class AlunoRequest extends FormRequest
 {
     /**
-     * Vai Determina se o usuário está autorizado a fazer essa requisição.
+     * Determina se o usuário está autorizado a fazer essa requisição.
      */
     public function authorize(): bool
     {
-        return true; // Alterado para true para permitir a requisição
+        return true; 
     }
 
     /**
      * Regras de validação (ATV 15)
      */
-    public function rules(): bool|array
+    public function rules(): array
     {
-        $alunoId = $this->aluno ? $this->aluno->id : null;
-
         return [
             'nome' => 'required|string|min:3|max:255',
-            'email' => 'required|email|unique:alunos,email,' . $alunoId,
+            'email' => [
+                'required',
+                'email',
+                // Essa regra verifica se é único, mas se houver um aluno (edição), ele ignora o ID dele de forma segura.
+                Rule::unique('alunos', 'email')->ignore($this->aluno),
+            ],
         ];
     }
 

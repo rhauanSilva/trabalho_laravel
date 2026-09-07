@@ -7,5 +7,11 @@ use Illuminate\Database\Eloquent\Model;
 
 class Aluno extends Model
 {
-    protected $fillable = ['nome', 'curso'];
+    use HasFactory;
+
+    // Libera os campos para serem salvos em massa pelo formulário
+    protected $fillable = [
+        'nome',
+        'email',
+    ];
 }
